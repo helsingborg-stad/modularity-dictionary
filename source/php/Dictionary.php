@@ -22,4 +22,50 @@ class Dictionary
             ));
         }
     }
+
+    public static function getMatchingWords(\WP_Post $post)
+    {
+        $dictionary = get_field('modularity_dictionary', 'option');
+
+        $pattern = self::getWordsPattern($dictionary);
+        $content = $post->post_title . "\n\n" . $post->post_content;
+        preg_match_all($pattern, $content, $matches);
+
+        if (!is_array($matches[0])) {
+            return false;
+        }
+
+        $matches = $matches[0];
+        $matches = array_map('strtolower', $matches);
+        $matches = array_unique($matches);
+
+        $dictionary = array_filter($dictionary, function ($item) use ($matches) {
+            $variations = (array) explode(',', $item['word_variations']);
+            $variations = array_map('strtolower', $variations);
+            $variations = array_map('trim', $variations);
+
+            return in_array(strtolower($item['word']), $matches) || count(array_intersect($variations, $matches)) > 0;
+        });
+
+        return $dictionary;
+    }
+
+    public static function getWordsPattern($dictionary)
+    {
+        $wordsToMatch = array();
+
+        foreach ($dictionary as $item) {
+            $wordsToMatch[] = $item['word'];
+
+            if (!empty($item['word_variations'])) {
+                $wordsToMatch = array_merge($wordsToMatch, (array)explode(',', $item['word_variations']));
+            }
+        }
+
+        $wordsToMatch = array_map('strtolower', $wordsToMatch);
+        $wordsToMatch = array_map('trim', $wordsToMatch);
+        $pattern = '/(' . implode('|', $wordsToMatch) . ')\b/i';
+
+        return $pattern;
+    }
 }

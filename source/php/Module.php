@@ -24,5 +24,11 @@ class Module extends \Modularity\Module
             $this->args['supports'],
             $this->args['icon']
         );
+
+        // Add our template folder as search path for templates
+        add_filter('Modularity/Module/TemplatePath', function ($paths) {
+            $paths[] = MODULARITYDICTIONARY_PATH . 'templates/';
+            return $paths;
+        });
     }
 }
