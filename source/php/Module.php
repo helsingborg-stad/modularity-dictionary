@@ -34,7 +34,11 @@ class Module extends \Modularity\Module
         add_action('wp', function () {
 
             global $post;
-            $matching = \ModularityDictionary\Dictionary::getMatchingWords($post);
+
+            $matching = array();
+            if (is_a($post, 'WP_Post')) {
+                $matching = \ModularityDictionary\Dictionary::getMatchingWords($post);
+            }
 
             add_filter('Modularity/Display/' . $this->moduleSlug . '/Markup', function ($markup, $module) use ($matching) {
                 if (!$matching || count($matching) === 0) {
