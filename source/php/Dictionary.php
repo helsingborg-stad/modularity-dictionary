@@ -28,6 +28,10 @@ class Dictionary
         $dictionary = get_field('modularity_dictionary', 'option');
 
         $pattern = self::getWordsPattern($dictionary);
+        if (!$pattern) {
+            return false;
+        }
+
         $content = $post->post_title . "\n\n" . $post->post_content;
         preg_match_all($pattern, $content, $matches);
 
@@ -53,6 +57,10 @@ class Dictionary
     public static function getWordsPattern($dictionary)
     {
         $wordsToMatch = array();
+
+        if (!is_array($dictionary)) {
+            return false;
+        }
 
         foreach ($dictionary as $item) {
             $wordsToMatch[] = $item['word'];

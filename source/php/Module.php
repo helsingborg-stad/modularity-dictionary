@@ -30,5 +30,20 @@ class Module extends \Modularity\Module
             $paths[] = MODULARITYDICTIONARY_PATH . 'templates/';
             return $paths;
         });
+
+        add_action('wp', function () {
+
+            global $post;
+            $matching = \ModularityDictionary\Dictionary::getMatchingWords($post);
+
+            add_filter('Modularity/Display/' . $this->moduleSlug . '/Markup', function ($markup, $module) use ($matching) {
+                if (!$matching || count($matching) === 0) {
+                    return '';
+                }
+
+                return $markup;
+            }, 10, 2);
+
+        });
     }
 }
