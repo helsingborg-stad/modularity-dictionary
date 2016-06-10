@@ -6,31 +6,18 @@ class App
 {
     public function __construct()
     {
-        add_action('admin_enqueue_scripts', array($this, 'enqueueStyles'));
-        add_action('admin_enqueue_scripts', array($this, 'enqueueScripts'));
-
         new \ModularityDictionary\Dictionary();
 
         add_action('Modularity', function () {
             new \ModularityDictionary\Module();
         });
+
+        add_filter('acf/settings/load_json', array($this, 'jsonLoadPath'));
     }
 
-    /**
-     * Enqueue required style
-     * @return void
-     */
-    public function enqueueStyles()
+    public function jsonLoadPath($paths)
     {
-
-    }
-
-    /**
-     * Enqueue required scripts
-     * @return void
-     */
-    public function enqueueScripts()
-    {
-
+        $paths[] = MODULARITYDICTIONARY_PATH . 'source/acf-json';
+        return $paths;
     }
 }
