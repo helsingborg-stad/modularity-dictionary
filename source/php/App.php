@@ -7,10 +7,7 @@ class App
     public function __construct()
     {
         new \ModularityDictionary\Dictionary();
-
-        add_action('Modularity', function () {
-            new \ModularityDictionary\Module();
-        });
+        new \ModularityDictionary\Module();
 
         add_filter('acf/settings/load_json', array($this, 'jsonLoadPath'));
     }
